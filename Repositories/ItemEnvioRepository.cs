@@ -20,7 +20,7 @@ public class ItemEnvioRepository : IItemEnvioRepository
     {
         using var conn = CriarConexao();
         const string sql = @"
-            INSERT INTO Item_envio (id_envio, id_embalagem)
+            INSERT INTO item_envio (id_envio, id_embalagem)
             VALUES (@IdEnvio, @IdEmbalagem)";
  
         var itens = idsEmbalagens.Select(id => new { IdEnvio = idEnvio, IdEmbalagem = id });
@@ -31,7 +31,7 @@ public class ItemEnvioRepository : IItemEnvioRepository
     {
         using var conn = CriarConexao();
         var count = await conn.ExecuteScalarAsync<int>(
-            "SELECT COUNT(*) FROM Embalagem WHERE id = @Id AND ativo = 1",
+            "SELECT COUNT(*) FROM embalagem WHERE id = @Id AND ativo = 1",
             new { Id = idEmbalagem });
         return count > 0;
     }

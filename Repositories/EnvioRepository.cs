@@ -22,7 +22,7 @@ public class EnvioRepository : IEnvioRepository
     {
         using var conn = CriarConexao();
         const string sql = @"
-        INSERT INTO Envio (id_usuario, id_empresa, data_envio, id_status_envio, observacao, quantidade_itens)
+        INSERT INTO envio (id_usuario, id_empresa, data_envio, id_status_envio, observacao, quantidade_itens)
         VALUES (@IdUsuario, @IdEmpresa, @DataEnvio, @IdStatusEnvio, @Observacao, @QuantidadeItens);
         SELECT LAST_INSERT_ID();
         ";
@@ -45,7 +45,7 @@ public class EnvioRepository : IEnvioRepository
             SELECT id Id, id_usuario IdUsuario, id_empresa IdEmpresa,
                    data_envio DataEnvio, id_status_envio IdStatusEnvio,
                    observacao Observacao, quantidade_itens QuantidadeItens
-            FROM Envio WHERE id = @Id";
+            FROM envio WHERE id = @Id";
  
         return await conn.QueryFirstOrDefaultAsync<Envio>(sql, new { Id = id });
     }
@@ -66,10 +66,10 @@ public class EnvioRepository : IEnvioRepository
                 e.id_status_envio   IdStatusEnvio,
                 e.observacao        Observacao,
                 e.quantidade_itens  QuantidadeItens
-            FROM Envio e
-            INNER JOIN Usuario      u   ON u.id   = e.id_usuario
-            INNER JOIN Empresa      emp ON emp.id = e.id_empresa
-            INNER JOIN Status_envio se  ON se.id  = e.id_status_envio
+            FROM envio e
+            INNER JOIN usuario      u   ON u.id   = e.id_usuario
+            INNER JOIN empresa      emp ON emp.id = e.id_empresa
+            INNER JOIN status_envio se  ON se.id  = e.id_status_envio
             WHERE e.id = @Id";
  
         var envio = await conn.QueryFirstOrDefaultAsync<EnvioDetalhadoDto>(sqlEnvio, new { Id = id });
@@ -83,9 +83,9 @@ public class EnvioRepository : IEnvioRepository
                 emb.descricao   DescricaoEmbalagem,
                 me.nome         MaterialEmbalagem,
                 emb.peso_medio  PesoMedio
-            FROM Item_envio ie
-            INNER JOIN Embalagem          emb ON emb.id = ie.id_embalagem
-            INNER JOIN Material_embalagem me  ON me.id  = emb.id_tipo
+            FROM item_envio ie
+            INNER JOIN embalagem          emb ON emb.id = ie.id_embalagem
+            INNER JOIN material_embalagem me  ON me.id  = emb.id_tipo
             WHERE ie.id_envio = @IdEnvio";
  
         envio.Itens = (await conn.QueryAsync<ItemEnvioDto>(sqlItens, new { IdEnvio = id })).ToList();
@@ -129,7 +129,7 @@ public class EnvioRepository : IEnvioRepository
         var whereClause = where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : "";
  
         var total = await conn.ExecuteScalarAsync<int>(
-            $"SELECT COUNT(*) FROM Envio e {whereClause}", parametros);
+            $"SELECT COUNT(*) FROM envio e {whereClause}", parametros);
  
         parametros.Add("Offset", (filtro.Pagina - 1) * filtro.TamanhoPagina);
         parametros.Add("Limit", filtro.TamanhoPagina);
@@ -142,10 +142,10 @@ public class EnvioRepository : IEnvioRepository
                 e.data_envio        DataEnvio,
                 se.nome_status      StatusEnvio,
                 e.quantidade_itens  QuantidadeItens
-            FROM Envio e
-            INNER JOIN Usuario      u   ON u.id   = e.id_usuario
-            INNER JOIN Empresa      emp ON emp.id = e.id_empresa
-            INNER JOIN Status_envio se  ON se.id  = e.id_status_envio
+            FROM envio e
+            INNER JOIN usuario      u   ON u.id   = e.id_usuario
+            INNER JOIN empresa      emp ON emp.id = e.id_empresa
+            INNER JOIN status_envio se  ON se.id  = e.id_status_envio
             {whereClause}
             ORDER BY e.data_envio DESC
             LIMIT @Limit OFFSET @Offset";
@@ -165,7 +165,7 @@ public class EnvioRepository : IEnvioRepository
     {
         using var conn = CriarConexao();
         const string sql = @"
-            UPDATE Envio SET id_status_envio = @IdStatus, observacao = @Observacao
+            UPDATE envio SET id_status_envio = @IdStatus, observacao = @Observacao
             WHERE id = @Id";
  
         await conn.ExecuteAsync(sql, new { Id = id, IdStatus = idStatus, Observacao = observacao });
@@ -175,21 +175,21 @@ public class EnvioRepository : IEnvioRepository
     {
         using var conn = CriarConexao();
         var count = await conn.ExecuteScalarAsync<int>(
-            "SELECT COUNT(*) FROM Envio WHERE id = @Id", new { Id = id });
+            "SELECT COUNT(*) FROM envio WHERE id = @Id", new { Id = id });
         return count > 0;
     }
 
     public async Task ExcluirAsync(int id)
     {
         using var conn = CriarConexao();
-        await conn.ExecuteAsync("DELETE FROM Envio WHERE id = @Id", new {Id = id});
+        await conn.ExecuteAsync("DELETE FROM envio WHERE id = @Id", new {Id = id});
     }
 
     public async Task EditarAsync(int id, EditarEnvioDto dto)
     {
         using var conn = CriarConexao();
         const string sql = @"
-        UPDATE Envio SET
+        UPDATE envio SET
         data_envio = @DataEnvio,
         id_empresa = @IdEmpresa,
         quantidade_itens = @QuantidadeItens
