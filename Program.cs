@@ -26,7 +26,7 @@ builder.Services.AddCors(options =>
 //HttpClient para chamadas entre microsserviços (API de Pontuação)
 builder.Services.AddHttpClient("ApiPontuacao", client =>
 {
-    client.BaseAddress = new Uri("http://localhost:5003");
+    client.BaseAddress = new Uri("https://repack-pontuacao.onrender.com");
 });
 
 //Injeção de dependência
