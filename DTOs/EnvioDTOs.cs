@@ -35,7 +35,7 @@ public class FiltroEnvioDto
     public DateTime? DataInicio { get; set; }
     public DateTime? DataFim { get; set; }
     public int Pagina { get; set; } = 1;
-    public int TamanhoPagina { get; set; } = 10;
+    public int TamanhoPagina { get; set; } = 1000;
 }
  
 // ───── RESPONSE ─────
